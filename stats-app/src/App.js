@@ -16,7 +16,10 @@ function App() {
       <Row>
         <Col className="p-0">
           <Navbar bg="dark" variant="dark" expand="lg">
-            <Navbar.Brand href="/">Covid - Belgium Stats</Navbar.Brand>
+            <Navbar.Brand href="/">
+              <img src="images/be_flag.png" width="40" className="mr-2" alt="Belgium" />
+              Covid-19 - Belgium Stats
+            </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="mr-auto">
