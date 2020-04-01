@@ -21,7 +21,7 @@ namespace ApiStatsApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMemoryCache();
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddCors(c =>
             {
                 c.AddPolicy("AllowOrigin", builder =>

@@ -8,10 +8,23 @@ function get(options, feedback) {
 
     let total = null;
 
-    fetch(options.url)
+    let url = options.url;
+    if(options.filter) {
+        let filterObj = [];
+        Object.keys(options.filter).forEach(key => {
+            filterObj.push({
+                key: key,
+                value: encodeURI(options.filter[key])
+            })
+        });
+        url += (url.indexOf('?') === -1) ? `?` : `&`;
+        url += `filterStr=${JSON.stringify(filterObj)}`;
+    }
+
+    fetch(url)
         .then(response => response.json())
         .then(response => {
-            let data = response.data;
+            let data = response.data ? response.data : response;
             if(options.orderBy && options.orderDir) {
                 data = sort(data, options.orderBy, options.orderDir)
             }

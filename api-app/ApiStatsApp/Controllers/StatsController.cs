@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -12,7 +13,7 @@ namespace ApiStatsApp.Controllers
 {
     [ApiController]
     [EnableCors("AllowOrigin")]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class StatsController : ControllerBase
     {
         private readonly IMemoryCacheService _cacheService;
@@ -23,13 +24,59 @@ namespace ApiStatsApp.Controllers
         }
 
         [HttpGet]
-        public JsonResult Get([FromQuery]StatType type)
+        public JsonResult GetConfirmedASDM([FromQuery]string filterStr)
+        {
+            Dictionary<string, string> filter = JsonConvert
+                .DeserializeObject<IEnumerable<KeyValuePair<string, string>>>(filterStr)
+                .ToDictionary(x => x.Key, x => x.Value);
+            var response = GetData<ConfirmedASDM>();
+
+            response.Data = response.Data
+                .Where(d => (filter["startDate"] == "" || String.IsNullOrEmpty(d.DATE) || (d.DATE.CompareTo(filter["startDate"]) > 0)))
+                .Where(d => (filter["endDate"] == "" || String.IsNullOrEmpty(d.DATE) || (d.DATE.CompareTo(filter["endDate"]) < 0)))
+                .Where(d => (filter["region"] == "ALL" || (String.IsNullOrEmpty(d.REGION) && String.IsNullOrEmpty(filter["region"])) || d.REGION == filter["region"]))
+                .Where(d => (filter["province"] == "ALL" || (String.IsNullOrEmpty(d.PROVINCE) && String.IsNullOrEmpty(filter["province"])) || d.PROVINCE == filter["province"]))
+                .Where(d => (filter["ageGroup"] == "ALL" || (String.IsNullOrEmpty(d.AGEGROUP) && String.IsNullOrEmpty(filter["ageGroup"])) || d.AGEGROUP == filter["ageGroup"]))
+                .Where(d => (filter["sex"] == "ALL" || (String.IsNullOrEmpty(d.SEX) && String.IsNullOrEmpty(filter["sex"])) || d.SEX == filter["sex"]))
+                .AsEnumerable();
+
+            return new JsonResult(response);
+        }
+
+
+        [HttpGet]
+        public JsonResult GetData([FromQuery]StatType type)
         {
             return type switch
             {
                 StatType.CasesDateASP => new JsonResult(GetData<ConfirmedASDM>()),
                 _ => null,
             };
+        }
+
+        [HttpGet]
+        public JsonResult GetFilterData([FromQuery]StatType type, [FromQuery]string field, [FromQuery]string re) {
+            switch (type)
+            {
+                case StatType.CasesDateASP:
+                    IEnumerable<ConfirmedASDM> data = GetData<ConfirmedASDM>().Data;
+                    switch (field)
+                    {
+                        case "region":
+                            return new JsonResult(data.Select(d => d.REGION).OrderBy(d => d).Distinct());
+                        case "province":
+                            return new JsonResult(data.Where(d => (d.REGION == re || re == "ALL")).Select(d => d.PROVINCE).OrderBy(d => d).Distinct());
+                        case "ageGroup":
+                            return new JsonResult(data.Select(d => d.AGEGROUP).OrderBy(d => d).Distinct());
+                        case "sex":
+                            return new JsonResult(data.Select(d => d.SEX).OrderBy(d => d).Distinct());
+                        default:
+                            break;
+                    }
+                    break;
+            }
+
+            return null;
         }
 
         public StatsResponse<T> GetData<T>() where T : IStat
