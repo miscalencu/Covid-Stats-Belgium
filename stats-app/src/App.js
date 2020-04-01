@@ -1,6 +1,5 @@
 import React from 'react';
 import './styles/App.css';
-import './styles/bootstrap.css';
 import { Container, Row, Col, Navbar, Nav, NavDropdown, Form, FormControl, Button } from 'react-bootstrap';
 import PageLink from './components/common/pageLink';
 import NotFound from './components/common/notFound';
@@ -13,8 +12,8 @@ function App() {
   return (
     <Container className="app">
       <Row>
-        <Col>
-          <Navbar bg="light" expand="lg">
+        <Col className="p-0">
+          <Navbar bg="dark" variant="dark" expand="lg">
             <Navbar.Brand href="/">Covid - Belgium Stats</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
@@ -38,7 +37,7 @@ function App() {
         </Col>
       </Row>
       <Row>
-        <Col className="pt-4">
+        <Col className="py-4">
           <Switch>
             <Route path={`/`} exact component={Home} />
             <Route path={`/cases_date_asp`} component={CasesDateAgeSexProvince} />
