@@ -1,0 +1,4 @@
+api-app/.vs
+api-app/ApiStatsApp/bin
+api-app/ApiStatsApp/obj/
+api-app/ApiStatsApp/*.csproj.user
