@@ -3,10 +3,10 @@ import { Grid, Column } from 'react-digital-grid';
 import { Form, Col } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import { _data } from './../scripts/all';
+import { _data } from '../scripts/all';
 import moment from 'moment';
 
-const CasesDateAgeSexProvince = () => {
+const CasesDateMunicipality = () => {
 
     const[ gridProps, setGridProps ] = useState({ 
         data: [],
@@ -18,35 +18,37 @@ const CasesDateAgeSexProvince = () => {
     });
 
     // filter data
+    const [ language, setLanguage ] = useState('FR');
     const [ regions, setRegions ] = useState([]);
     const [ provinces, setProvinces ] = useState([]);
-    const [ ageGroups, setAgeGroups ] = useState([]);
-    const [ sexes, setSexes ] = useState([]);
+    const [ districts, setDistricts ] = useState([]);
+    const [ cities, setCities ] = useState([]);
     
     // filter values
-    const [ filterProvince, setFilterProvince] = useState(["ALL"]);
-    const [ filterRegion, setFilterRegion] = useState(["ALL"])
     const [ filterStartDate, setFilterStartDate ] = useState("");
     const [ filterEndDate, setFilterEndDate ] = useState("");
-    const [ filterAgeGroup, setFilterAgeGroup ] = useState("ALL");
-    const [ filterSex, setFilterSex ] = useState("ALL");
+    const [ filterProvince, setFilterProvince] = useState(["ALL"]);
+    const [ filterRegion, setFilterRegion] = useState(["ALL"])
+    const [ filterDistrict, setFilterDistrict ] = useState("ALL");
+    const [ filterCity, setFilterCity ] = useState("ALL");
 
     const loadData = (pageSize, pageNr, orderBy, orderDir) => {
         setGridProps(Object.assign(gridProps, { loading: true }));
         _data.get(
         {
-            url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateASP`,
+            url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateM`,
             pageNr: pageNr,
             pageSize: pageSize,
             orderBy: orderBy,
             orderDir: orderDir,
             filter: {
+                lang: language,
                 startDate: filterStartDate ? new moment(filterStartDate).format('YYYY-MM-DD') : '',
                 endDate: filterEndDate ? new moment(filterEndDate).format('YYYY-MM-DD') : '',
                 region: filterRegion,
                 province: filterProvince,
-                ageGroup: filterAgeGroup,
-                sex: filterSex
+                district: filterDistrict,
+                city: filterCity
             },
         }, (data, count) => {
           setGridProps({
@@ -65,25 +67,49 @@ const CasesDateAgeSexProvince = () => {
 
     useEffect(() => {
         // set filter items
-        _data.get({ url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetFilterData?type=CasesDateASP&field=region` }, (data) => setRegions(data));
-        _data.get({ url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetFilterData?type=CasesDateASP&field=ageGroup` }, (data) => setAgeGroups(data));
-        _data.get({ url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetFilterData?type=CasesDateASP&field=sex` }, (data) => setSexes(data));
-
+        _data.get({ url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetFilterData?type=CasesDateM&lang=${language}&field=region` }, (data) => setRegions(data));
+        
         loadData(gridProps.pageSize, gridProps.pageNr, gridProps.orderBy, gridProps.orderDir);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ filterStartDate, filterEndDate, filterRegion, filterProvince, filterAgeGroup, filterSex ]);
+    }, [ language, filterStartDate, filterEndDate, filterRegion, filterProvince, filterDistrict, filterCity ]);
 
     useEffect(() => {
-        // set filter items
         _data.get({ 
-            url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetFilterData?type=CasesDateASP&field=province&re=${filterRegion}` 
+            url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetFilterData?type=CasesDateM&lang=${language}&field=province&re=${filterRegion}` 
         }, (data) => setProvinces(data))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ filterRegion ]);        
 
+    useEffect(() => {
+        _data.get({ url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetFilterData?type=CasesDateM&lang=${language}&field=district&re=${filterRegion}|${filterProvince}` }, (data) => setDistricts(data));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ filterRegion, filterProvince ]);       
+
+    useEffect(() => {
+        _data.get({ url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetFilterData?type=CasesDateM&lang=${language}&field=city&re=${filterRegion}|${filterProvince}|${filterDistrict}` }, (data) => setCities(data));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ filterRegion, filterProvince, filterDistrict ]);   
+
     return (
         <>
-            <h1>Confirmed Cases - by Date, Agem, Sex and Province</h1>
+            <h1>
+                <img 
+                    width = "24"
+                    alt = {`Flag`}
+                    title = {`Current language: ${language}. Click to change!`}
+                    src={ `images/${language}_flag.png` }
+                    onClick={(e) => { 
+                        setLanguage(language === "FR" ? "NL" : "FR");
+                        setFilterRegion('ALL');
+                        setFilterProvince('ALL');
+                        setFilterDistrict('ALL');
+                        setFilterCity('ALL');
+                    }}
+                    style={{ cursor: "pointer" }}
+                    className="mx-2 my-2"
+                />
+                Confirmed Cases - by Date and Municipality:
+            </h1>
             <Form className="mb-3">
                 <Form.Row>
                     <Col>
@@ -116,7 +142,12 @@ const CasesDateAgeSexProvince = () => {
                         <Form.Control 
                             as="select"
                             placeholder="Region"
-                            onChange={(e) => { setFilterRegion(e.target.value); setFilterProvince("ALL"); }}>
+                            onChange={(e) => { 
+                                setFilterRegion(e.target.value); 
+                                setFilterProvince("ALL"); 
+                                setFilterDistrict('ALL');
+                                setFilterCity('ALL');                                
+                                }}>
                             <Form.Control as="option" value="ALL">Region</Form.Control>
                             {
                                 regions.map(item => {
@@ -129,7 +160,11 @@ const CasesDateAgeSexProvince = () => {
                         <Form.Control 
                             as="select"
                             placeholder="Province"
-                            onChange={(e) => setFilterProvince(e.target.value)}>
+                            onChange={(e) => { 
+                                setFilterProvince(e.target.value); 
+                                setFilterDistrict('ALL');
+                                setFilterCity('ALL');                                
+                                }}>
                             <Form.Control as="option" value="ALL">Province</Form.Control>
                             {
                                 provinces.map(item => {
@@ -141,11 +176,14 @@ const CasesDateAgeSexProvince = () => {
                     <Col>
                         <Form.Control 
                             as="select"
-                            placeholder="Age Group"
-                            onChange={(e) => setFilterAgeGroup(e.target.value)}>
-                            <Form.Control as="option" value="ALL">Age Group</Form.Control>
+                            placeholder="District"
+                            onChange={(e) => { 
+                                setFilterDistrict(e.target.value); 
+                                setFilterCity('ALL');                                
+                                }}>
+                            <Form.Control as="option" value="ALL">District</Form.Control>
                             {
-                                ageGroups.map(item => {
+                                districts.map(item => {
                                     return <Form.Control as="option" key={item} value={item}>{item}</Form.Control>
                                 })
                             }
@@ -154,11 +192,11 @@ const CasesDateAgeSexProvince = () => {
                     <Col>
                     <Form.Control 
                             as="select"
-                            placeholder="Sex"
-                            onChange={(e) => setFilterSex(e.target.value)}>
-                            <Form.Control as="option" value="ALL">Sex</Form.Control>
+                            placeholder="City"
+                            onChange={(e) => setFilterCity(e.target.value)}>
+                            <Form.Control as="option" value="ALL">City</Form.Control>
                             {
-                                sexes.map(item => {
+                                cities.map(item => {
                                     return <Form.Control as="option" key={item} value={item}>{item}</Form.Control>
                                 })
                             }
@@ -173,16 +211,17 @@ const CasesDateAgeSexProvince = () => {
                     loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir)
                 }
                 > 
-                <Column sortable header='Date' className='italic' field='date' />
-                <Column sortable header='Region' className='center bold' field='region' />
-                <Column sortable header='Province' className='center bold' field='province' />
-                <Column sortable header='Age' className='center' field='agegroup' />
-                <Column sortable header='Sex' className='center' field='sex' />
-                <Column sortable header='Cases' className='center' field='cases' />
+                <Column sortable header='Date' className='bold' field='date' />
+                <Column sortable header='NIS5' className='center bold' field='niS5' />
+                <Column sortable header='Region' field={`tX_RGN_DESCR_${language}`} />
+                <Column sortable header='Province' field={`tX_PROV_DESCR_${language}`} />
+                <Column sortable header='District' field={`tX_ADM_DSTR_DESCR_${language}`} />
+                <Column sortable header='City' field={`tX_DESCR_${language}`} />
+                <Column sortable header='Cases' className='center bold' field='cases' />
             </Grid>
         </>
     );
 
 }
 
-export default CasesDateAgeSexProvince;
+export default CasesDateMunicipality;

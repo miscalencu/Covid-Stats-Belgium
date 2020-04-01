@@ -1,6 +1,6 @@
 ﻿namespace ApiStatsApp.Code.Core.Stats
 {
-    public class ConfirmedASDM : IStat
+    public class ConfirmedDASP : IStat
     {
         public string DATE { get; set; }
         public string PROVINCE { get; set; }

@@ -7,6 +7,8 @@ namespace ApiStatsApp.Code.Core.Stats
 {
     public enum StatType
     {
-        CasesDateASP
+        CasesDateASP,
+        CasesDateM,
+        CasesDateCumM
     }
 }
