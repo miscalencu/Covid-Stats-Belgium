@@ -79,6 +79,22 @@ namespace ApiStatsApp.Controllers
         }
 
         [HttpGet]
+        public JsonResult GetCasesDateTests([FromQuery]string filterStr)
+        {
+            Dictionary<string, string> filter = JsonConvert
+                .DeserializeObject<IEnumerable<KeyValuePair<string, string>>>(filterStr)
+                .ToDictionary(x => x.Key, x => x.Value);
+            var response = GetData<ConfirmedDTests>();
+
+            response.Data = response.Data
+                .Where(d => (filter["startDate"] == "" || String.IsNullOrEmpty(d.DATE) || (d.DATE.CompareTo(filter["startDate"]) >= 0)))
+                .Where(d => (filter["endDate"] == "" || String.IsNullOrEmpty(d.DATE) || (d.DATE.CompareTo(filter["endDate"]) <= 0)))
+                .AsEnumerable();
+
+            return new JsonResult(response);
+        }
+
+        [HttpGet]
         public JsonResult GetCasesDateMort([FromQuery]string filterStr)
         {
             Dictionary<string, string> filter = JsonConvert
@@ -289,6 +305,16 @@ namespace ApiStatsApp.Controllers
                         }
                     }
                     break;
+                case StatType.CasesDateTests:
+                    {
+                        IEnumerable<ConfirmedDASP> data = GetData<ConfirmedDASP>().Data;
+                        switch (field)
+                        {
+                            default:
+                                break;
+                        }
+                    }
+                    break;
             }
 
             return null;
@@ -314,6 +340,9 @@ namespace ApiStatsApp.Controllers
                     break;
                 case nameof(ConfirmedDMort):
                     apiPart = "COVID19BE_MORT";
+                    break;
+                case nameof(ConfirmedDTests):
+                    apiPart = "COVID19BE_TESTS";
                     break;
                 default:
                     break;

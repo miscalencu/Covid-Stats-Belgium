@@ -6,6 +6,7 @@
         CasesDateM,
         CasesDateCumM,
         CasesDateHosp,
-        CasesDateMort
+        CasesDateMort,
+        CasesDateTests
     }
 }
