@@ -83,7 +83,7 @@ const CasesDateAgeSexProvince = () => {
 
     return (
         <>
-            <h1>Confirmed Cases - by Date, Agem, Sex and Province</h1>
+            <h1>Confirmed Cases - by Date, Age, Sex and Province</h1>
             <Form className="mb-3">
                 <Form.Row>
                     <Col>

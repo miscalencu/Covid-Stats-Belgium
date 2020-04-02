@@ -12,6 +12,8 @@ import CasesDateMunicipalityCum from './components/CasesDateMunicipalityCum'
 import Hospitalisations from './components/Hospitalisations'
 import Mortality from './components/Mortality'
 import Tests from './components/Tests'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUsers, faMapMarked, faMap, faUserNurse, faSkullCrossbones, faVial } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
   return (
@@ -27,14 +29,32 @@ function App() {
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="mr-auto">
                 <NavDropdown title="Confirmed cases" id="basic-nav-dropdown">
-                  <PageLink className="dropdown-item" to={`/cases_date_asp`}>By date, age, sex and province</PageLink>
-                  <PageLink className="dropdown-item" to={`/cases_date_mun`}>By date and municipality</PageLink>
+                  <PageLink className="dropdown-item" to={`/cases_date_asp`}>
+                    <FontAwesomeIcon className="mr-2" icon={ faUsers } />
+                    By Date, Age, Sex and Province
+                  </PageLink>
+                  <PageLink className="dropdown-item" to={`/cases_date_mun`}>
+                    <FontAwesomeIcon className="mr-2" icon={ faMapMarked } />
+                    By Date and Municipality
+                  </PageLink>
                   <NavDropdown.Divider />
-                  <PageLink className="dropdown-item" to={`/cases_cum_mun`}>Cumulative by municipality</PageLink>
+                  <PageLink className="dropdown-item" to={`/cases_cum_mun`}>
+                    <FontAwesomeIcon className="mr-2" icon={ faMap } />
+                    Cumulative by municipality
+                  </PageLink>
                 </NavDropdown>
-                <PageLink className="nav-link" to={`/hosp`}>Hospitalisations</PageLink>
-                <PageLink className="nav-link" to={`/mortality`}>Mortality</PageLink>
-                <PageLink className="nav-link" to={`/tests`}>Tests</PageLink>
+                <PageLink className="nav-link" to={`/hosp`}>
+                    <FontAwesomeIcon className="mr-2" icon={ faUserNurse } />
+                    Hospitalisations
+                </PageLink>
+                <PageLink className="nav-link" to={`/mortality`}>
+                  <FontAwesomeIcon className="mr-2" icon={ faSkullCrossbones } />
+                  Mortality
+                </PageLink>
+                <PageLink className="nav-link" to={`/tests`}>
+                  <FontAwesomeIcon className="mr-2" icon={ faVial } />
+                  Tests
+                </PageLink>
               </Nav>
               <Form inline hidden>
                 <FormControl type="text" placeholder="Search" className="mr-sm-2" />
