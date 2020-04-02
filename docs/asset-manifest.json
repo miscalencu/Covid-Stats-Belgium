@@ -1,0 +1,41 @@
+{
+  "files": {
+    "main.css": "/covid-stats-belgium/static/css/main.ef2f89a0.chunk.css",
+    "main.js": "/covid-stats-belgium/static/js/main.a7ff0ab9.chunk.js",
+    "main.js.map": "/covid-stats-belgium/static/js/main.a7ff0ab9.chunk.js.map",
+    "runtime-main.js": "/covid-stats-belgium/static/js/runtime-main.9013ae8c.js",
+    "runtime-main.js.map": "/covid-stats-belgium/static/js/runtime-main.9013ae8c.js.map",
+    "static/css/2.b90ce945.chunk.css": "/covid-stats-belgium/static/css/2.b90ce945.chunk.css",
+    "static/js/2.25a9f82f.chunk.js": "/covid-stats-belgium/static/js/2.25a9f82f.chunk.js",
+    "static/js/2.25a9f82f.chunk.js.map": "/covid-stats-belgium/static/js/2.25a9f82f.chunk.js.map",
+    "static/css/3.8a49567a.chunk.css": "/covid-stats-belgium/static/css/3.8a49567a.chunk.css",
+    "static/js/3.6c954e48.chunk.js": "/covid-stats-belgium/static/js/3.6c954e48.chunk.js",
+    "static/js/3.6c954e48.chunk.js.map": "/covid-stats-belgium/static/js/3.6c954e48.chunk.js.map",
+    "static/css/4.24de2365.chunk.css": "/covid-stats-belgium/static/css/4.24de2365.chunk.css",
+    "static/js/4.22e02de8.chunk.js": "/covid-stats-belgium/static/js/4.22e02de8.chunk.js",
+    "static/js/4.22e02de8.chunk.js.map": "/covid-stats-belgium/static/js/4.22e02de8.chunk.js.map",
+    "static/css/5.b8d9b97a.chunk.css": "/covid-stats-belgium/static/css/5.b8d9b97a.chunk.css",
+    "static/js/5.921dd295.chunk.js": "/covid-stats-belgium/static/js/5.921dd295.chunk.js",
+    "static/js/5.921dd295.chunk.js.map": "/covid-stats-belgium/static/js/5.921dd295.chunk.js.map",
+    "static/css/6.d6d3c540.chunk.css": "/covid-stats-belgium/static/css/6.d6d3c540.chunk.css",
+    "static/js/6.6ee80ecd.chunk.js": "/covid-stats-belgium/static/js/6.6ee80ecd.chunk.js",
+    "static/js/6.6ee80ecd.chunk.js.map": "/covid-stats-belgium/static/js/6.6ee80ecd.chunk.js.map",
+    "index.html": "/covid-stats-belgium/index.html",
+    "precache-manifest.c5e61ac34e89cfae703461cbea0da760.js": "/covid-stats-belgium/precache-manifest.c5e61ac34e89cfae703461cbea0da760.js",
+    "service-worker.js": "/covid-stats-belgium/service-worker.js",
+    "static/css/2.b90ce945.chunk.css.map": "/covid-stats-belgium/static/css/2.b90ce945.chunk.css.map",
+    "static/css/3.8a49567a.chunk.css.map": "/covid-stats-belgium/static/css/3.8a49567a.chunk.css.map",
+    "static/css/4.24de2365.chunk.css.map": "/covid-stats-belgium/static/css/4.24de2365.chunk.css.map",
+    "static/css/5.b8d9b97a.chunk.css.map": "/covid-stats-belgium/static/css/5.b8d9b97a.chunk.css.map",
+    "static/css/6.d6d3c540.chunk.css.map": "/covid-stats-belgium/static/css/6.d6d3c540.chunk.css.map",
+    "static/css/main.ef2f89a0.chunk.css.map": "/covid-stats-belgium/static/css/main.ef2f89a0.chunk.css.map",
+    "static/js/2.25a9f82f.chunk.js.LICENSE.txt": "/covid-stats-belgium/static/js/2.25a9f82f.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.9013ae8c.js",
+    "static/css/2.b90ce945.chunk.css",
+    "static/js/2.25a9f82f.chunk.js",
+    "static/css/main.ef2f89a0.chunk.css",
+    "static/js/main.a7ff0ab9.chunk.js"
+  ]
+}
