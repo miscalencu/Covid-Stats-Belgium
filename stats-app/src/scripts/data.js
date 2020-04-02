@@ -69,5 +69,6 @@ function filter(arr, pageNr, pageSize) {
 }
 
 export { 
-    get    
+    get,
+    sort
 }

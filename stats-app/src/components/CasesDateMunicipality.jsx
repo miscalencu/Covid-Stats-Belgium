@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Column } from 'react-digital-grid';
-import { Form, Col } from 'react-bootstrap';
+import { Form, Col, Button } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { _data } from '../scripts/all';
 import moment from 'moment';
+import StatsChart from './StatsChart';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { useCookies } from 'react-cookie';
 
 const CasesDateMunicipality = () => {
 
@@ -16,6 +20,7 @@ const CasesDateMunicipality = () => {
         orderBy: 'date',
         orderDir: 'DESC'
     });
+    const [ chartData, setChartData ] = useState([]);
 
     // filter data
     const [ language, setLanguage ] = useState('FR');
@@ -25,15 +30,17 @@ const CasesDateMunicipality = () => {
     const [ cities, setCities ] = useState([]);
     
     // filter values
-    const [ filterStartDate, setFilterStartDate ] = useState("");
+    const [ filterStartDate, setFilterStartDate ] = useState(moment().subtract(1, 'months').toDate());
     const [ filterEndDate, setFilterEndDate ] = useState("");
     const [ filterProvince, setFilterProvince] = useState(["ALL"]);
     const [ filterRegion, setFilterRegion] = useState(["ALL"])
     const [ filterDistrict, setFilterDistrict ] = useState("ALL");
     const [ filterCity, setFilterCity ] = useState("ALL");
 
+    const [ cookies, setCookie ] = useCookies(['hideGrid']);
     const loadData = (pageSize, pageNr, orderBy, orderDir) => {
         setGridProps(Object.assign(gridProps, { loading: true }));
+        // get grid data
         _data.get(
         {
             url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateM`,
@@ -62,6 +69,22 @@ const CasesDateMunicipality = () => {
             emptyPlaceholder: '-'
           })
         });
+        // get chart data
+        _data.get(
+            {
+                url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateM`,
+                pageNr: 1,
+                pageSize: 100000000,
+                filter: {
+                    lang: language,
+                    startDate: filterStartDate ? new moment(filterStartDate).format('YYYY-MM-DD') : '',
+                    endDate: filterEndDate ? new moment(filterEndDate).format('YYYY-MM-DD') : '',
+                    region: filterRegion,
+                    province: filterProvince,
+                    district: filterDistrict,
+                    city: filterCity
+                },
+            }, (data) => setChartData(data));
       }
     
 
@@ -108,7 +131,17 @@ const CasesDateMunicipality = () => {
                     style={{ cursor: "pointer" }}
                     className="mx-2 my-2"
                 />
-                Confirmed Cases - by Date and Municipality:
+                Confirmed Cases - by Date and Municipality
+                <Button 
+                    variant={ cookies.hideGrid === "1" ? 'primary': 'light' } 
+                    className="m-1" 
+                    size="sm" 
+                    onClick={() => {
+                        setCookie('hideGrid', cookies.hideGrid !== "1" ? "1": "0");
+                    }}
+                    title={ cookies.hideGrid === "1" ? 'Show grid': 'View chart only' }>
+                    <FontAwesomeIcon icon={ faChartLine } />
+                </Button>
             </h1>
             <Form className="mb-3">
                 <Form.Row>
@@ -204,21 +237,37 @@ const CasesDateMunicipality = () => {
                     </Col>
                 </Form.Row>
             </Form>
-            <Grid 
-                { ...gridProps }
-                skin='bootstrap'
-                onStateChange={newState =>
-                    loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir)
-                }
-                > 
-                <Column sortable header='Date' className='bold' field='date' />
-                <Column sortable header='NIS5' className='center bold' field='niS5' />
-                <Column sortable header='Region' field={`tX_RGN_DESCR_${language}`} />
-                <Column sortable header='Province' field={`tX_PROV_DESCR_${language}`} />
-                <Column sortable header='District' field={`tX_ADM_DSTR_DESCR_${language}`} />
-                <Column sortable header='City' field={`tX_DESCR_${language}`} />
-                <Column sortable header='Cases' className='center bold' field='cases' />
-            </Grid>
+            {
+                (cookies.hideGrid !== "1") &&
+                <Grid 
+                    { ...gridProps }
+                    skin='bootstrap'
+                    onStateChange={newState =>
+                        loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir)
+                    }
+                    > 
+                    <Column sortable header='Date' className='bold' field='date' />
+                    <Column sortable header='NIS5' className='center bold' field='niS5' />
+                    <Column sortable header='Region' field={`tX_RGN_DESCR_${language}`} />
+                    <Column sortable header='Province' field={`tX_PROV_DESCR_${language}`} />
+                    <Column sortable header='District' field={`tX_ADM_DSTR_DESCR_${language}`} />
+                    <Column sortable header='City' field={`tX_DESCR_${language}`} />
+                    <Column sortable header='Cases' className='center bold' field='cases' />
+                </Grid>
+            }
+            <StatsChart
+                type="CasesDateM"
+                filter={{
+                    lang: language,
+                    startDate: filterStartDate,
+                    endDate: filterEndDate,
+                    region: filterRegion,
+                    province: filterProvince,
+                    district: filterDistrict,
+                    city: filterCity
+                }}
+                data={chartData}
+             />
         </>
     );
 

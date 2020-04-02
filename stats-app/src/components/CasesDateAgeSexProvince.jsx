@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Column } from 'react-digital-grid';
-import { Form, Col } from 'react-bootstrap';
+import { Form, Col, Button } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { _data } from './../scripts/all';
 import moment from 'moment';
+import StatsChart from './StatsChart';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { useCookies } from 'react-cookie';
 
 const CasesDateAgeSexProvince = () => {
 
@@ -16,7 +20,8 @@ const CasesDateAgeSexProvince = () => {
         orderBy: 'date',
         orderDir: 'DESC'
     });
-
+    const [ chartData, setChartData ] = useState([]);
+    
     // filter data
     const [ regions, setRegions ] = useState([]);
     const [ provinces, setProvinces ] = useState([]);
@@ -26,42 +31,59 @@ const CasesDateAgeSexProvince = () => {
     // filter values
     const [ filterProvince, setFilterProvince] = useState(["ALL"]);
     const [ filterRegion, setFilterRegion] = useState(["ALL"])
-    const [ filterStartDate, setFilterStartDate ] = useState("");
+    const [ filterStartDate, setFilterStartDate ] = useState(moment().subtract(1, 'months').toDate());
     const [ filterEndDate, setFilterEndDate ] = useState("");
     const [ filterAgeGroup, setFilterAgeGroup ] = useState("ALL");
     const [ filterSex, setFilterSex ] = useState("ALL");
 
+    const [ cookies, setCookie ] = useCookies(['hideGrid']);
     const loadData = (pageSize, pageNr, orderBy, orderDir) => {
         setGridProps(Object.assign(gridProps, { loading: true }));
+        // get grid data
         _data.get(
-        {
-            url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateASP`,
-            pageNr: pageNr,
-            pageSize: pageSize,
-            orderBy: orderBy,
-            orderDir: orderDir,
-            filter: {
-                startDate: filterStartDate ? new moment(filterStartDate).format('YYYY-MM-DD') : '',
-                endDate: filterEndDate ? new moment(filterEndDate).format('YYYY-MM-DD') : '',
-                region: filterRegion,
-                province: filterProvince,
-                ageGroup: filterAgeGroup,
-                sex: filterSex
-            },
-        }, (data, count) => {
-          setGridProps({
-            loading: false,
-            data: data,
-            dataCount: count,
-            pageNr: pageNr,
-            pageSize: pageSize,
-            orderBy: orderBy,
-            orderDir: orderDir,
-            emptyPlaceholder: '-'
-          })
-        });
+            {
+                url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateASP`,
+                pageNr: pageNr,
+                pageSize: pageSize,
+                orderBy: orderBy,
+                orderDir: orderDir,
+                filter: {
+                    startDate: filterStartDate ? new moment(filterStartDate).format('YYYY-MM-DD') : '',
+                    endDate: filterEndDate ? new moment(filterEndDate).format('YYYY-MM-DD') : '',
+                    region: filterRegion,
+                    province: filterProvince,
+                    ageGroup: filterAgeGroup,
+                    sex: filterSex
+                },
+            }, (data, count) => {
+              setGridProps({
+                loading: false,
+                data: data,
+                dataCount: count,
+                pageNr: pageNr,
+                pageSize: pageSize,
+                orderBy: orderBy,
+                orderDir: orderDir,
+                emptyPlaceholder: '-'
+              })
+            });
+        
+        // get chart data
+        _data.get(
+            {
+                url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateASP`,
+                pageNr: 1,
+                pageSize: 100000000,
+                filter: {
+                    startDate: filterStartDate ? new moment(filterStartDate).format('YYYY-MM-DD') : '',
+                    endDate: filterEndDate ? new moment(filterEndDate).format('YYYY-MM-DD') : '',
+                    region: filterRegion,
+                    province: filterProvince,
+                    ageGroup: filterAgeGroup,
+                    sex: filterSex
+                },
+            }, (data) => setChartData(data));
       }
-    
 
     useEffect(() => {
         // set filter items
@@ -83,7 +105,19 @@ const CasesDateAgeSexProvince = () => {
 
     return (
         <>
-            <h1>Confirmed Cases - by Date, Age, Sex and Province</h1>
+            <h1>
+                Confirmed Cases - by Date, Age, Sex and Province
+                <Button 
+                    variant={ cookies.hideGrid === "1" ? 'primary': 'light' } 
+                    className="m-1" 
+                    size="sm" 
+                    onClick={() => {
+                        setCookie('hideGrid', cookies.hideGrid !== "1" ? "1": "0");
+                    }}
+                    title={ cookies.hideGrid === "1" ? 'Show grid': 'View chart only' }>
+                    <FontAwesomeIcon icon={ faChartLine } />
+                </Button>
+            </h1>
             <Form className="mb-3">
                 <Form.Row>
                     <Col>
@@ -166,20 +200,35 @@ const CasesDateAgeSexProvince = () => {
                     </Col>
                 </Form.Row>
             </Form>
-            <Grid 
-                { ...gridProps }
-                skin='bootstrap'
-                onStateChange={newState =>
-                    loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir)
-                }
-                > 
-                <Column sortable header='Date' className='italic' field='date' />
-                <Column sortable header='Region' className='center bold' field='region' />
-                <Column sortable header='Province' className='center bold' field='province' />
-                <Column sortable header='Age' className='center' field='agegroup' />
-                <Column sortable header='Sex' className='center' field='sex' />
-                <Column sortable header='Cases' className='center' field='cases' />
-            </Grid>
+            {
+                (cookies.hideGrid !== "1") &&
+                <Grid 
+                    { ...gridProps }
+                    skin='bootstrap'
+                    onStateChange={newState =>
+                        loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir)
+                    }
+                    > 
+                    <Column sortable header='Date' className='italic' field='date' />
+                    <Column sortable header='Region' className='center bold' field='region' />
+                    <Column sortable header='Province' className='center bold' field='province' />
+                    <Column sortable header='Age' className='center' field='agegroup' />
+                    <Column sortable header='Sex' className='center' field='sex' />
+                    <Column sortable header='Cases' className='center' field='cases' />
+                </Grid>
+            }
+            <StatsChart
+                type="CasesDateASP"
+                filter={{
+                    startDate: filterStartDate,
+                    endDate: filterEndDate,
+                    region: filterRegion,
+                    province: filterProvince,
+                    ageGroup: filterAgeGroup,
+                    sex: filterSex
+                }}
+                data={chartData}
+             />
         </>
     );
 

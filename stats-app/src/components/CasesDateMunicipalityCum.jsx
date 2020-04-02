@@ -101,7 +101,7 @@ const CasesDateMunicipalityCum = () => {
                     style={{ cursor: "pointer" }}
                     className="mx-2 my-2"
                 />
-                Confirmed Cases - Cumulative Number by Municipality:
+                Confirmed Cases - Cumulative Number by Municipality
             </h1>
             <Form className="mb-3">
                 <Form.Row>

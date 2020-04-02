@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Column } from 'react-digital-grid';
-import { Form, Col } from 'react-bootstrap';
+import { Form, Col, Button } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { _data } from '../scripts/all';
 import moment from 'moment';
+import StatsChart from './StatsChart';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { useCookies } from 'react-cookie';
 
 const Hospitalisations = () => {
 
@@ -16,6 +20,7 @@ const Hospitalisations = () => {
         orderBy: 'date',
         orderDir: 'DESC'
     });
+    const [ chartData, setChartData ] = useState([]);
 
     // filter data
     const [ regions, setRegions ] = useState([]);
@@ -24,11 +29,13 @@ const Hospitalisations = () => {
     // filter values
     const [ filterProvince, setFilterProvince] = useState(["ALL"]);
     const [ filterRegion, setFilterRegion] = useState(["ALL"])
-    const [ filterStartDate, setFilterStartDate ] = useState("");
+    const [ filterStartDate, setFilterStartDate ] = useState(moment().subtract(1, 'months').toDate());
     const [ filterEndDate, setFilterEndDate ] = useState("");
 
+    const [ cookies, setCookie ] = useCookies(['hideGrid']);
     const loadData = (pageSize, pageNr, orderBy, orderDir) => {
         setGridProps(Object.assign(gridProps, { loading: true }));
+        // set grid data
         _data.get(
         {
             url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateHosp`,
@@ -54,6 +61,19 @@ const Hospitalisations = () => {
             emptyPlaceholder: '-'
           })
         });
+        // set chart data
+        _data.get(
+            {
+                url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateHosp`,
+                pageNr: 1,
+                pageSize: 10000000,
+                filter: {
+                    startDate: filterStartDate ? new moment(filterStartDate).format('YYYY-MM-DD') : '',
+                    endDate: filterEndDate ? new moment(filterEndDate).format('YYYY-MM-DD') : '',
+                    region: filterRegion,
+                    province: filterProvince
+                },
+            }, (data) => setChartData(data));
       }
     
 
@@ -75,7 +95,19 @@ const Hospitalisations = () => {
 
     return (
         <>
-            <h1>Confirmed Cases - Hospitalisations</h1>
+            <h1>
+                Confirmed Cases - Hospitalisations
+                <Button 
+                    variant={ cookies.hideGrid === "1" ? 'primary': 'light' } 
+                    className="m-1" 
+                    size="sm" 
+                    onClick={() => {
+                        setCookie('hideGrid', cookies.hideGrid !== "1" ? "1": "0");
+                    }}
+                    title={ cookies.hideGrid === "1" ? 'Show grid': 'View chart only' }>
+                    <FontAwesomeIcon icon={ faChartLine } />
+                </Button>
+            </h1>
             <Form className="mb-3">
                 <Form.Row>
                     <Col>
@@ -92,7 +124,7 @@ const Hospitalisations = () => {
                          />
                     </Col>
                     <Col>
-                    <DatePicker
+                        <DatePicker
                             selectsEnd
                             startDate={filterStartDate}
                             endDate={filterEndDate}
@@ -133,24 +165,37 @@ const Hospitalisations = () => {
                     <Col md={4}></Col>
                 </Form.Row>
             </Form>
-            <Grid 
-                { ...gridProps }
-                skin='bootstrap'
-                onStateChange={newState =>
-                    loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir)
-                }
-                > 
-                <Column sortable header='Date' className='italic' field='date' />
-                <Column sortable header='Region' className='center bold' field='region' />
-                <Column sortable header='Province' className='center bold' field='province' />
-                <Column sortable header='Reporting' className='center' field='nR_REPORTING' />
-                <Column sortable header='IN' className='center' field='totaL_IN' />
-                <Column sortable header='ICU' className='center' field='totaL_IN_ICU' />
-                <Column sortable header='RESP' className='center' field='totaL_IN_RESP' />
-                <Column sortable header='ECMO' className='center' field='totaL_IN_ECMO' />
-                <Column sortable header='NEW IN' className='center' field='neW_IN' />
-                <Column sortable header='NEW OUT' className='center' field='neW_OUT' />
-            </Grid>
+            {
+                (cookies.hideGrid !== "1") &&
+                <Grid 
+                    { ...gridProps }
+                    skin='bootstrap'
+                    onStateChange={newState =>
+                        loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir)
+                    }
+                    > 
+                    <Column sortable header='Date' className='italic' field='date' />
+                    <Column sortable header='Region' className='center bold' field='region' />
+                    <Column sortable header='Province' className='center bold' field='province' />
+                    <Column sortable header='Reporting' className='center' field='nR_REPORTING' />
+                    <Column sortable header='IN' className='center' field='totaL_IN' />
+                    <Column sortable header='ICU' className='center' field='totaL_IN_ICU' />
+                    <Column sortable header='RESP' className='center' field='totaL_IN_RESP' />
+                    <Column sortable header='ECMO' className='center' field='totaL_IN_ECMO' />
+                    <Column sortable header='NEW IN' className='center' field='neW_IN' />
+                    <Column sortable header='NEW OUT' className='center' field='neW_OUT' />
+                </Grid>
+            }
+            <StatsChart
+                type="CasesDateHosp"
+                filter={{
+                    startDate: filterStartDate,
+                    endDate: filterEndDate,
+                    region: filterRegion,
+                    province: filterProvince
+                }}
+                data={chartData}
+             />
         </>
     );
 

@@ -6,6 +6,6 @@
         public string REGION { get; set; }
         public string AGEGROUP { get; set; }
         public string SEX { get; set; }
-        public int DEATHS { get; set; }
+        public string DEATHS { get; set; }
     }
 }

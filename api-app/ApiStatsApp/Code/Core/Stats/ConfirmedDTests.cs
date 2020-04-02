@@ -3,6 +3,6 @@
     public class ConfirmedDTests : IStat
     {
         public string DATE { get; set; }
-        public int TESTS { get; set; }
+        public string TESTS { get; set; }
     }
 }
