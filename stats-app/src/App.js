@@ -59,6 +59,11 @@ function App() {
           </Switch>
         </Col>
       </Row>
+      <Row>
+        <Col className="footer">
+          Source of data: <a href="https://epistat.wiv-isp.be/Covid/" target="_balnk">https://epistat.wiv-isp.be/Covid/</a> | Source code: <a href="https://github.com/miscalencu/Covid-Stats-Belgium" taget="_blank">https://github.com/miscalencu/Covid-Stats-Belgium</a>
+        </Col>
+      </Row>
     </Container>
   );
 }
