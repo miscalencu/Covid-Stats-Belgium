@@ -1,5 +1,6 @@
 {
-  "homepage": "https://miscalencu.github.io/Covid-Stats-Belgium",
+  "_homepage": "https://miscalencu.github.io/Covid-Stats-Belgium",
+  "homepage": "http://covid19-app.textgate.net",
   "name": "stats-app",
   "version": "0.1.0",
   "private": true,
