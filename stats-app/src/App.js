@@ -13,7 +13,7 @@ import Hospitalisations from './components/Hospitalisations'
 import Mortality from './components/Mortality'
 import Tests from './components/Tests'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers, faMapMarked, faMap, faUserNurse, faSkullCrossbones, faVial } from '@fortawesome/free-solid-svg-icons';
+import { faUsers, faMapMarked, faMap, faUserNurse, faSkullCrossbones, faVial, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
   return (
@@ -82,6 +82,10 @@ function App() {
       <Row>
         <Col className="footer">
           Source of data: <a href="https://epistat.wiv-isp.be/Covid/" target="_balnk">https://epistat.wiv-isp.be/Covid/</a> | Source code: <a href="https://github.com/miscalencu/Covid-Stats-Belgium" taget="_blank">https://github.com/miscalencu/Covid-Stats-Belgium</a>
+          <a className="float-right" href="https://epistat.sciensano.be/Data/COVID19BE.xlsx" target="_blank">
+            <FontAwesomeIcon className="mr-2" icon={ faFileExcel } />
+            Excel Data
+          </a>
         </Col>
       </Row>
     </Container>
