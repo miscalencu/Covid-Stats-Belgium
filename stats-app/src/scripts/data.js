@@ -14,7 +14,7 @@ function get(options, feedback) {
         Object.keys(options.filter).forEach(key => {
             filterObj.push({
                 key: key,
-                value: encodeURI(options.filter[key])
+                value: encodeURIComponent(options.filter[key])
             })
         });
         url += (url.indexOf('?') === -1) ? `?` : `&`;

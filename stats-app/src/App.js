@@ -10,6 +10,7 @@ import CasesDateAgeSexProvince from './components/CasesDateAgeSexProvince'
 import CasesDateMunicipality from './components/CasesDateMunicipality'
 import CasesDateMunicipalityCum from './components/CasesDateMunicipalityCum'
 import Hospitalisations from './components/Hospitalisations'
+import Mortality from './components/Mortality'
 
 function App() {
   return (
@@ -50,7 +51,7 @@ function App() {
             <Route path={`/cases_date_mun`} component={CasesDateMunicipality} />
             <Route path={`/cases_cum_mun`} component={CasesDateMunicipalityCum} />
             <Route path={`/hosp`} component={Hospitalisations} />
-            <Route path={`/mortality`} component={NotFound} />
+            <Route path={`/mortality`} component={Mortality} />
             <Route path={`/not-tests`} component={NotFound} />
             <PageRedirect to={`/not-found`} />
           </Switch>
