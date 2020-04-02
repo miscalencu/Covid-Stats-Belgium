@@ -79,6 +79,24 @@ namespace ApiStatsApp.Controllers
         }
 
         [HttpGet]
+        public JsonResult GetCasesDateHosp([FromQuery]string filterStr)
+        {
+            Dictionary<string, string> filter = JsonConvert
+                .DeserializeObject<IEnumerable<KeyValuePair<string, string>>>(filterStr)
+                .ToDictionary(x => x.Key, x => x.Value);
+            var response = GetData<ConfirmedDHosp>();
+
+            response.Data = response.Data
+                .Where(d => (filter["startDate"] == "" || String.IsNullOrEmpty(d.DATE) || (d.DATE.CompareTo(filter["startDate"]) >= 0)))
+                .Where(d => (filter["endDate"] == "" || String.IsNullOrEmpty(d.DATE) || (d.DATE.CompareTo(filter["endDate"]) <= 0)))
+                .Where(d => (filter["region"] == "ALL" || (String.IsNullOrEmpty(d.REGION) && String.IsNullOrEmpty(filter["region"])) || d.REGION == filter["region"]))
+                .Where(d => (filter["province"] == "ALL" || (String.IsNullOrEmpty(d.PROVINCE) && String.IsNullOrEmpty(filter["province"])) || d.PROVINCE == filter["province"]))
+                .AsEnumerable();
+
+            return new JsonResult(response);
+        }
+
+        [HttpGet]
         public JsonResult GetCasesDateM([FromQuery]string filterStr)
         {
             Dictionary<string, string> filter = JsonConvert
@@ -222,6 +240,20 @@ namespace ApiStatsApp.Controllers
                         }
                     }
                     break;
+                case StatType.CasesDateHosp:
+                    {
+                        IEnumerable<ConfirmedDASP> data = GetData<ConfirmedDASP>().Data;
+                        switch (field)
+                        {
+                            case "region":
+                                return new JsonResult(data.Select(d => d.REGION).OrderBy(d => d).Distinct());
+                            case "province":
+                                return new JsonResult(data.Where(d => (d.REGION == re || re == "ALL")).Select(d => d.PROVINCE).OrderBy(d => d).Distinct());
+                            default:
+                                break;
+                        }
+                    }
+                    break;
             }
 
             return null;
@@ -241,6 +273,9 @@ namespace ApiStatsApp.Controllers
                     break;
                 case nameof(ConfirmedCumDM):
                     apiPart = "COVID19BE_CASES_MUNI_CUM";
+                    break;
+                case nameof(ConfirmedDHosp):
+                    apiPart = "COVID19BE_HOSP";
                     break;
                 default:
                     break;
