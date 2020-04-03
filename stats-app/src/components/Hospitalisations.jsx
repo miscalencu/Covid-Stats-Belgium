@@ -14,13 +14,14 @@ const Hospitalisations = () => {
 
     const[ gridProps, setGridProps ] = useState({ 
         data: [],
-        loading: true,
         pageNr: 1,
         pageSize: 10,
         orderBy: 'date',
         orderDir: 'DESC'
     });
     const [ chartData, setChartData ] = useState([]);
+    const [ loadingGrid, setLoadingGrid ] = useState(true);
+    const [ loadingChart, setLoadingChart ] = useState(true);
 
     // filter data
     const [ regions, setRegions ] = useState([]);
@@ -33,9 +34,9 @@ const Hospitalisations = () => {
     const [ filterEndDate, setFilterEndDate ] = useState("");
 
     const [ cookies, setCookie ] = useCookies(['hideGrid']);
-    const loadData = (pageSize, pageNr, orderBy, orderDir) => {
-        setGridProps(Object.assign(gridProps, { loading: true }));
+    const loadData = (pageSize, pageNr, orderBy, orderDir, loadChartData) => {
         // set grid data
+        setLoadingGrid(true);
         _data.get(
         {
             url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateHosp`,
@@ -51,7 +52,6 @@ const Hospitalisations = () => {
             },
         }, (data, count) => {
           setGridProps({
-            loading: false,
             data: data,
             dataCount: count,
             pageNr: pageNr,
@@ -59,21 +59,30 @@ const Hospitalisations = () => {
             orderBy: orderBy,
             orderDir: orderDir,
             emptyPlaceholder: '-'
-          })
+          });
+          setLoadingGrid(false);
         });
-        // set chart data
-        _data.get(
-            {
-                url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateHosp`,
-                pageNr: 1,
-                pageSize: 10000000,
-                filter: {
-                    startDate: filterStartDate ? new moment(filterStartDate).format('YYYY-MM-DD') : '',
-                    endDate: filterEndDate ? new moment(filterEndDate).format('YYYY-MM-DD') : '',
-                    region: filterRegion,
-                    province: filterProvince
-                },
-            }, (data) => setChartData(data));
+
+        // get chart data
+        if(loadChartData) {
+            setLoadingChart(true);
+            _data.get(
+                {
+                    url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateHosp`,
+                    pageNr: 1,
+                    pageSize: 10000000,
+                    filter: {
+                        startDate: filterStartDate ? new moment(filterStartDate).format('YYYY-MM-DD') : '',
+                        endDate: filterEndDate ? new moment(filterEndDate).format('YYYY-MM-DD') : '',
+                        region: filterRegion,
+                        province: filterProvince
+                    },
+                }, (data) => 
+                { 
+                    setChartData(data); 
+                    setLoadingChart(false);
+                });
+            }
       }
     
 
@@ -81,7 +90,7 @@ const Hospitalisations = () => {
         // set filter items
         _data.get({ url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetFilterData?type=CasesDateHosp&field=region` }, (data) => setRegions(data));
         
-        loadData(gridProps.pageSize, gridProps.pageNr, gridProps.orderBy, gridProps.orderDir);
+        loadData(gridProps.pageSize, gridProps.pageNr, gridProps.orderBy, gridProps.orderDir, true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ filterStartDate, filterEndDate, filterRegion, filterProvince ]);
 
@@ -169,10 +178,9 @@ const Hospitalisations = () => {
                 (cookies.hideGrid !== "1") &&
                 <Grid 
                     { ...gridProps }
+                    loading={loadingGrid}
                     skin='bootstrap'
-                    onStateChange={newState =>
-                        loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir)
-                    }
+                    onStateChange={newState => loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir, false) }
                     > 
                     <Column sortable header='Date' className='italic' field='date' />
                     <Column sortable header='Region' className='center bold' field='region' />
@@ -188,6 +196,7 @@ const Hospitalisations = () => {
             }
             <StatsChart
                 type="CasesDateHosp"
+                loading={loadingChart}
                 filter={{
                     startDate: filterStartDate,
                     endDate: filterEndDate,

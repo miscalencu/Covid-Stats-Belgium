@@ -14,13 +14,14 @@ const CasesDateAgeSexProvince = () => {
 
     const[ gridProps, setGridProps ] = useState({ 
         data: [],
-        loading: true,
         pageNr: 1,
         pageSize: 10,
         orderBy: 'date',
         orderDir: 'DESC'
     });
     const [ chartData, setChartData ] = useState([]);
+    const [ loadingGrid, setLoadingGrid ] = useState(true);
+    const [ loadingChart, setLoadingChart ] = useState(true);
     
     // filter data
     const [ regions, setRegions ] = useState([]);
@@ -37,9 +38,9 @@ const CasesDateAgeSexProvince = () => {
     const [ filterSex, setFilterSex ] = useState("ALL");
 
     const [ cookies, setCookie ] = useCookies(['hideGrid']);
-    const loadData = (pageSize, pageNr, orderBy, orderDir) => {
-        setGridProps(Object.assign(gridProps, { loading: true }));
+    const loadData = (pageSize, pageNr, orderBy, orderDir, loadChartData) => {
         // get grid data
+        setLoadingGrid(true);
         _data.get(
             {
                 url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateASP`,
@@ -57,7 +58,6 @@ const CasesDateAgeSexProvince = () => {
                 },
             }, (data, count) => {
               setGridProps({
-                loading: false,
                 data: data,
                 dataCount: count,
                 pageNr: pageNr,
@@ -65,24 +65,32 @@ const CasesDateAgeSexProvince = () => {
                 orderBy: orderBy,
                 orderDir: orderDir,
                 emptyPlaceholder: '-'
-              })
+              });
+              setLoadingGrid(false);
             });
         
         // get chart data
-        _data.get(
-            {
-                url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateASP`,
-                pageNr: 1,
-                pageSize: 100000000,
-                filter: {
-                    startDate: filterStartDate ? new moment(filterStartDate).format('YYYY-MM-DD') : '',
-                    endDate: filterEndDate ? new moment(filterEndDate).format('YYYY-MM-DD') : '',
-                    region: filterRegion,
-                    province: filterProvince,
-                    ageGroup: filterAgeGroup,
-                    sex: filterSex
-                },
-            }, (data) => setChartData(data));
+        if(loadChartData) {
+            setLoadingChart(true);
+            _data.get(
+                {
+                    url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateASP`,
+                    pageNr: 1,
+                    pageSize: 100000000,
+                    filter: {
+                        startDate: filterStartDate ? new moment(filterStartDate).format('YYYY-MM-DD') : '',
+                        endDate: filterEndDate ? new moment(filterEndDate).format('YYYY-MM-DD') : '',
+                        region: filterRegion,
+                        province: filterProvince,
+                        ageGroup: filterAgeGroup,
+                        sex: filterSex
+                    },
+                }, (data) => 
+                { 
+                    setChartData(data); 
+                    setLoadingChart(false);
+                });
+            }
       }
 
     useEffect(() => {
@@ -91,7 +99,7 @@ const CasesDateAgeSexProvince = () => {
         _data.get({ url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetFilterData?type=CasesDateASP&field=ageGroup` }, (data) => setAgeGroups(data));
         _data.get({ url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetFilterData?type=CasesDateASP&field=sex` }, (data) => setSexes(data));
 
-        loadData(gridProps.pageSize, gridProps.pageNr, gridProps.orderBy, gridProps.orderDir);
+        loadData(gridProps.pageSize, gridProps.pageNr, gridProps.orderBy, gridProps.orderDir, true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ filterStartDate, filterEndDate, filterRegion, filterProvince, filterAgeGroup, filterSex ]);
 
@@ -205,9 +213,8 @@ const CasesDateAgeSexProvince = () => {
                 <Grid 
                     { ...gridProps }
                     skin='bootstrap'
-                    onStateChange={newState =>
-                        loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir)
-                    }
+                    loading={loadingGrid}
+                    onStateChange={newState => loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir, false) }
                     > 
                     <Column sortable header='Date' className='italic' field='date' />
                     <Column sortable header='Region' className='center bold' field='region' />
@@ -219,6 +226,7 @@ const CasesDateAgeSexProvince = () => {
             }
             <StatsChart
                 type="CasesDateASP"
+                loading={loadingChart}
                 filter={{
                     startDate: filterStartDate,
                     endDate: filterEndDate,

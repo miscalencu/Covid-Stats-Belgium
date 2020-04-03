@@ -3,11 +3,19 @@ import moment from 'moment';
 import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts';
 import { _data } from './../scripts/all';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSync } from '@fortawesome/free-solid-svg-icons';
 
 const StatsChart = (props) => {
 
     if(!props.data || props.data.length === 0)
-        return "No records yet.";
+        return (props.loading === true) ? (
+            <>
+                <FontAwesomeIcon icon={faSync} className='fa-spin mr-2' />
+                Please wait. Loading chart data...
+            </>
+        )
+        : "No records available.";
 
     let chartDates = [];
     let chartSeriesInfo = [];
@@ -103,11 +111,18 @@ const StatsChart = (props) => {
     };
 
     return(
-        <HighchartsReact
-            highcharts={Highcharts}
-            options={chartOptions}
-        />
+        <div style={{ position: 'relative' }}>
+            { props.loading && <FontAwesomeIcon icon={faSync} className='fa-spin mr-2' style={{ position: 'absolute', zIndex: 100, top: 10, left: 10, color: '#c00' }} /> }
+            <HighchartsReact
+                highcharts={Highcharts}
+                options={chartOptions}
+            />
+        </div>
     );
+}
+
+StatsChart.defaultProps = {
+    loading: false
 }
 
 export default StatsChart;

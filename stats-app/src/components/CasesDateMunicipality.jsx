@@ -14,13 +14,14 @@ const CasesDateMunicipality = () => {
 
     const[ gridProps, setGridProps ] = useState({ 
         data: [],
-        loading: true,
         pageNr: 1,
         pageSize: 10,
         orderBy: 'date',
         orderDir: 'DESC'
     });
     const [ chartData, setChartData ] = useState([]);
+    const [ loadingGrid, setLoadingGrid ] = useState(true);
+    const [ loadingChart, setLoadingChart ] = useState(true);
 
     // filter data
     const [ language, setLanguage ] = useState('FR');
@@ -38,9 +39,9 @@ const CasesDateMunicipality = () => {
     const [ filterCity, setFilterCity ] = useState("ALL");
 
     const [ cookies, setCookie ] = useCookies(['hideGrid']);
-    const loadData = (pageSize, pageNr, orderBy, orderDir) => {
-        setGridProps(Object.assign(gridProps, { loading: true }));
+    const loadData = (pageSize, pageNr, orderBy, orderDir, loadChartData) => {
         // get grid data
+        setLoadingGrid(true);
         _data.get(
         {
             url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateM`,
@@ -59,7 +60,6 @@ const CasesDateMunicipality = () => {
             },
         }, (data, count) => {
           setGridProps({
-            loading: false,
             data: data,
             dataCount: count,
             pageNr: pageNr,
@@ -67,32 +67,40 @@ const CasesDateMunicipality = () => {
             orderBy: orderBy,
             orderDir: orderDir,
             emptyPlaceholder: '-'
-          })
+          });
+          setLoadingGrid(false);
         });
+
         // get chart data
-        _data.get(
-            {
-                url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateM`,
-                pageNr: 1,
-                pageSize: 100000000,
-                filter: {
-                    lang: language,
-                    startDate: filterStartDate ? new moment(filterStartDate).format('YYYY-MM-DD') : '',
-                    endDate: filterEndDate ? new moment(filterEndDate).format('YYYY-MM-DD') : '',
-                    region: filterRegion,
-                    province: filterProvince,
-                    district: filterDistrict,
-                    city: filterCity
-                },
-            }, (data) => setChartData(data));
+        if(loadChartData) {
+            setLoadingChart(true);
+            _data.get(
+                {
+                    url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateM`,
+                    pageNr: 1,
+                    pageSize: 100000000,
+                    filter: {
+                        lang: language,
+                        startDate: filterStartDate ? new moment(filterStartDate).format('YYYY-MM-DD') : '',
+                        endDate: filterEndDate ? new moment(filterEndDate).format('YYYY-MM-DD') : '',
+                        region: filterRegion,
+                        province: filterProvince,
+                        district: filterDistrict,
+                        city: filterCity
+                    },
+                }, (data) => 
+                { 
+                    setChartData(data); 
+                    setLoadingChart(false);
+                });
+            }
       }
-    
 
     useEffect(() => {
         // set filter items
         _data.get({ url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetFilterData?type=CasesDateM&lang=${language}&field=region` }, (data) => setRegions(data));
         
-        loadData(gridProps.pageSize, gridProps.pageNr, gridProps.orderBy, gridProps.orderDir);
+        loadData(gridProps.pageSize, gridProps.pageNr, gridProps.orderBy, gridProps.orderDir, true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ language, filterStartDate, filterEndDate, filterRegion, filterProvince, filterDistrict, filterCity ]);
 
@@ -242,9 +250,8 @@ const CasesDateMunicipality = () => {
                 <Grid 
                     { ...gridProps }
                     skin='bootstrap'
-                    onStateChange={newState =>
-                        loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir)
-                    }
+                    loading={loadingGrid}
+                    onStateChange={newState => loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir, false)}
                     > 
                     <Column sortable header='Date' className='bold' field='date' />
                     <Column sortable header='NIS5' className='center bold' field='niS5' />
@@ -257,6 +264,7 @@ const CasesDateMunicipality = () => {
             }
             <StatsChart
                 type="CasesDateM"
+                loading={loadingChart}
                 filter={{
                     lang: language,
                     startDate: filterStartDate,

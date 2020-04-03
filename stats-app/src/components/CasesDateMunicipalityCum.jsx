@@ -7,12 +7,12 @@ const CasesDateMunicipalityCum = () => {
 
     const[ gridProps, setGridProps ] = useState({ 
         data: [],
-        loading: true,
         pageNr: 1,
         pageSize: 10,
         orderBy: 'date',
         orderDir: 'DESC'
     });
+    const [ loadingGrid, setLoadingGrid ] = useState(true);
 
     // filter data
     const [ language, setLanguage ] = useState('FR');
@@ -28,7 +28,7 @@ const CasesDateMunicipalityCum = () => {
     const [ filterCity, setFilterCity ] = useState("ALL");
 
     const loadData = (pageSize, pageNr, orderBy, orderDir) => {
-        setGridProps(Object.assign(gridProps, { loading: true }));
+        setLoadingGrid(true);
         _data.get(
         {
             url: `${process.env.REACT_APP_API_ROOT_URL}/Stats/GetCasesDateMCum`,
@@ -45,7 +45,6 @@ const CasesDateMunicipalityCum = () => {
             },
         }, (data, count) => {
           setGridProps({
-            loading: false,
             data: data,
             dataCount: count,
             pageNr: pageNr,
@@ -53,7 +52,8 @@ const CasesDateMunicipalityCum = () => {
             orderBy: orderBy,
             orderDir: orderDir,
             emptyPlaceholder: '-'
-          })
+          });
+          setLoadingGrid(false);
         });
       }
     
@@ -174,6 +174,7 @@ const CasesDateMunicipalityCum = () => {
             <Grid 
                 { ...gridProps }
                 skin='bootstrap'
+                loading={loadingGrid}
                 onStateChange={newState =>
                     loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir)
                 }
