@@ -9,7 +9,7 @@ const PageLink = (params) => {
     const useHash = process.env.REACT_APP_ROUTER_TYPE === "hash";
     return (
         <>
-            {useHash && <a className={params.className} href={`${process.env.PUBLIC_URL}/#${params.to}`}>{params.children}</a>}
+            {useHash && <a onClick={() => { if(params.onSelect) params.onSelect(); }} className={params.className} href={`${process.env.PUBLIC_URL}/#${params.to}`}>{params.children}</a>}
             {!useHash && <Link to={params.to}>{params.children}</Link>}
         </>
     )

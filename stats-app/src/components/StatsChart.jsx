@@ -30,33 +30,33 @@ const StatsChart = (props) => {
     switch(props.type) {
         case "CasesDateASP":
             chartSeriesInfo = [
-                { label: "Cases", field: "cases" }
+                { label: "Cases", field: "cases", visible: true }
             ];
             break;
         case "CasesDateM":
             chartSeriesInfo = [
-                { label: "Cases", field: "cases" }
+                { label: "Cases", field: "cases", visible: true }
             ];
             break;
         case "CasesDateHosp":
             chartSeriesInfo = [
-                { label: "Reporting", field: "nR_REPORTING" },
-                { label: "IN", field: "totaL_IN" },
-                { label: "ICU", field: "totaL_IN_ICU" },
-                { label: "RESP", field: "totaL_IN_RESP" },
-                { label: "ECMO", field: "totaL_IN_ECMO" },
-                { label: "NEW IN", field: "neW_IN" },
-                { label: "NEW OUT", field: "neW_OUT" }
+                { label: "Reporting", field: "nR_REPORTING", visible: !props.homepage },
+                { label: "SICK", field: "totaL_IN", visible: !props.homepage },
+                { label: "ICU", field: "totaL_IN_ICU", visible: !props.homepage },
+                { label: "RESP", field: "totaL_IN_RESP", visible: !props.homepage },
+                { label: "ECMO", field: "totaL_IN_ECMO", visible: !props.homepage },
+                { label: "HOSP IN", field: "neW_IN", visible: true },
+                { label: "HOSP OUT", field: "neW_OUT", visible: true }
             ];
             break;   
         case "CasesDateMort":
             chartSeriesInfo = [
-                { label: "Deaths", field: "deaths" }
+                { label: "Deaths", field: "deaths", visible: true }
             ];
             break;           
         case "CasesDateTests":
             chartSeriesInfo = [
-                { label: "Tests", field: "tests" }
+                { label: "Tests", field: "tests", visible: true }
             ];
             break;                           
         default:
@@ -79,7 +79,8 @@ const StatsChart = (props) => {
                 label: {
                     enabled: true
                 },
-                data: seriesValues
+                data: seriesValues,
+                visible: info.visible
             });
         });
         return chartSeries;
@@ -87,7 +88,7 @@ const StatsChart = (props) => {
 
     let chartOptions = {
     title: {
-        text: ""
+        text: (props.homepage === true) ? "Entire Belgium - patients hospitalised IN vs. OUT in the last month" : ""
     },
     plotOptions: {
         line: {
@@ -122,6 +123,7 @@ const StatsChart = (props) => {
 }
 
 StatsChart.defaultProps = {
+    homepage: false,
     loading: false
 }
 
