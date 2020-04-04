@@ -376,9 +376,18 @@ namespace ApiStatsApp.Controllers
                 
                 cachedObject = new StoredResponse<T>()
                 {
-                    DownloadDate = DateTime.Now,
-                    Data = JsonConvert.DeserializeObject<List<T>>(strData)
+                    DownloadDate = DateTime.Now
                 };
+
+                switch (typeof(T).Name)
+                {
+                    case nameof(ConfirmedDTests):
+                        cachedObject.Data = JsonConvert.DeserializeObject<ConfirmedDTestsRespose>(strData).SASTableData_COVID19BE_TESTS as IEnumerable<T>;
+                        break;
+                    default:
+                        cachedObject.Data = JsonConvert.DeserializeObject<List<T>>(strData);
+                        break;
+                }
 
                 _cacheService.Add<StoredResponse<T>>(cachedObject, cacheKey, TimeSpan.FromHours(1));
             }
