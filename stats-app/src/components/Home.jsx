@@ -42,7 +42,7 @@ const CasesDateAgeSexProvince = () => {
         <>
             <h1>Welcome</h1>
             <p>This is a mini React/.Net Core WebAPI website to visually display the official Belgium Covid-19 data.</p>   
-            <p>Source of data: <a href="https://epistat.wiv-isp.be/Covid/" rel="noopener noreferrer" target="_blank">https://epistat.wiv-isp.be/Covid/</a></p>
+            <p>Source of data: <a href="https://epistat.wiv-isp.be/Covid" rel="noopener noreferrer" target="_blank">https://epistat.wiv-isp.be/Covid</a></p>
             <p>Source code: <a href="https://github.com/miscalencu/Covid-Stats-Belgium" rel="noopener noreferrer" taget="_blank">https://github.com/miscalencu/Covid-Stats-Belgium</a></p>
             <br />
             <p>
