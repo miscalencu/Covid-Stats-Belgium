@@ -3,4 +3,4 @@ Mini React/.Net Core WebAPI website to visually display the official Belgium Cov
 
 Source of data: https://epistat.wiv-isp.be/Covid.
 
-Website available at: http://covid19-app.textgate.net.
+Website available at: https://covid19-be.azurewebsites.net/.
