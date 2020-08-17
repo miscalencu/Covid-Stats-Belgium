@@ -56,7 +56,7 @@ const StatsChart = (props) => {
             break;           
         case "CasesDateTests":
             chartSeriesInfo = [
-                { label: "Tests", field: "tests", visible: true }
+                { label: "Tests", field: "testS_ALL", visible: true }
             ];
             break;                           
         default:
