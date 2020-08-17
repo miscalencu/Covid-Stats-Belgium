@@ -381,9 +381,9 @@ namespace ApiStatsApp.Controllers
 
                 switch (typeof(T).Name)
                 {
-                    case nameof(ConfirmedDTests):
-                        cachedObject.Data = JsonConvert.DeserializeObject<ConfirmedDTestsRespose>(strData).SASTableData_COVID19BE_TESTS as IEnumerable<T>;
-                        break;
+                    //case nameof(ConfirmedDTests):
+                    //    cachedObject.Data = JsonConvert.DeserializeObject<ConfirmedDTestsRespose>(strData).SASTableData_COVID19BE_TESTS as IEnumerable<T>;
+                    //    break;
                     default:
                         cachedObject.Data = JsonConvert.DeserializeObject<List<T>>(strData);
                         break;
