@@ -137,7 +137,7 @@ const CasesDateAgeSexProvince = () => {
                     onStateChange={newState => loadData(newState.pageSize, newState.pageNr, newState.orderBy, newState.orderDir, false)}
                     > 
                     <Column sortable header='Date' className='italic' field='date' />
-                    <Column sortable header='Tests' className='center' field='tests' />
+                    <Column sortable header='Tests' className='center' field='testS_ALL' />
                 </Grid>
             }
             <StatsChart
