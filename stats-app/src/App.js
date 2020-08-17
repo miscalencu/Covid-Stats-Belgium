@@ -81,10 +81,10 @@ function App() {
       </Row>
       <Row>
         <Col className="footer">
-          Source of data: 
-          <a href="https://epistat.wiv-isp.be/Covid/" rel="noopener noreferrer" target="_blank">
-            https://epistat.wiv-isp.be/Covid/
-          </a> | Source code: 
+          Source of data:&nbsp; 
+          <a href="https://epistat.wiv-isp.be/Covid" rel="noopener noreferrer" target="_blank">
+            https://epistat.wiv-isp.be/Covid
+          </a> | Source code:&nbsp;
           <a href="https://github.com/miscalencu/Covid-Stats-Belgium" rel="noopener noreferrer" taget="_blank">
               https://github.com/miscalencu/Covid-Stats-Belgium
           </a>

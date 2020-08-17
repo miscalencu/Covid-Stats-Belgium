@@ -4,6 +4,7 @@ import { _data } from '../scripts/all';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { useCookies } from 'react-cookie';
 
 const CasesDateAgeSexProvince = () => {
 
@@ -11,8 +12,10 @@ const CasesDateAgeSexProvince = () => {
     const [ loadingChart, setLoadingChart ] = useState(true);
     const [ filterStartDate ] = useState(moment().subtract(1, 'months').toDate());
     const [ filterEndDate ] = useState("");
+    const [ cookies, setCookie ] = useCookies(['hideGrid']);
 
     useEffect(() => {
+        setCookie('hideGrid', "1"); // hide grid by default
         loadData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ filterStartDate, filterEndDate ]);
@@ -42,7 +45,7 @@ const CasesDateAgeSexProvince = () => {
         <>
             <h1>Welcome</h1>
             <p>This is a mini React/.Net Core WebAPI website to visually display the official Belgium Covid-19 data.</p>   
-            <p>Source of data: <a href="https://epistat.wiv-isp.be/Covid/" rel="noopener noreferrer" target="_blank">https://epistat.wiv-isp.be/Covid/</a></p>
+            <p>Source of data: <a href="https://epistat.wiv-isp.be/Covid" rel="noopener noreferrer" target="_blank">https://epistat.wiv-isp.be/Covid</a></p>
             <p>Source code: <a href="https://github.com/miscalencu/Covid-Stats-Belgium" rel="noopener noreferrer" taget="_blank">https://github.com/miscalencu/Covid-Stats-Belgium</a></p>
             <br />
             <p>
