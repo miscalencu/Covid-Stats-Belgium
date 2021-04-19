@@ -1,0 +1,7 @@
+@host = http://localhost/ApiStatsApp
+
+# GET
+
+GET {{host}}/Stats/GetVaccinesDate
+    ?filterStr=[{%22key%22:%22startDate%22,%22value%22:%222021-03-19%22},{%22key%22:%22endDate%22,%22value%22:%22%22},{%22key%22:%22region%22,%22value%22:%22ALL%22},{%22key%22:%22ageGroup%22,%22value%22:%22ALL%22},{%22key%22:%22sex%22,%22value%22:%22ALL%22},{%22key%22:%22dose%22,%22value%22:%22ALL%22}]
+content-type: application/json

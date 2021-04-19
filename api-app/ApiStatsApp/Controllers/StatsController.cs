@@ -169,6 +169,26 @@ namespace ApiStatsApp.Controllers
         }
 
         [HttpGet]
+        public JsonResult GetVaccinesDate([FromQuery] string filterStr)
+        {
+            Dictionary<string, string> filter = JsonConvert
+                .DeserializeObject<IEnumerable<KeyValuePair<string, string>>>(filterStr)
+                .ToDictionary(x => x.Key, x => x.Value);
+            var response = GetData<VaccinesD>();
+
+            response.Data = response.Data
+                .Where(d => (filter["startDate"] == "" || String.IsNullOrEmpty(d.DATE) || (d.DATE.CompareTo(filter["startDate"]) >= 0)))
+                .Where(d => (filter["endDate"] == "" || String.IsNullOrEmpty(d.DATE) || (d.DATE.CompareTo(filter["endDate"]) <= 0)))
+                .Where(d => (filter["region"] == "ALL" || (String.IsNullOrEmpty(d.REGION) && String.IsNullOrEmpty(filter["region"])) || d.REGION == filter["region"]))
+                .Where(d => (filter["ageGroup"] == "ALL" || (String.IsNullOrEmpty(d.AGEGROUP) && String.IsNullOrEmpty(filter["ageGroup"])) || d.AGEGROUP == filter["ageGroup"]))
+                .Where(d => (filter["sex"] == "ALL" || (String.IsNullOrEmpty(d.SEX) && String.IsNullOrEmpty(filter["sex"])) || d.SEX == filter["sex"]))
+                .Where(d => (filter["dose"] == "ALL" || (String.IsNullOrEmpty(d.DOSE) && String.IsNullOrEmpty(filter["dose"])) || d.DOSE == filter["dose"]))
+                .AsEnumerable();
+
+            return new JsonResult(response);
+        }
+
+        [HttpGet]
         public JsonResult GetData([FromQuery]StatType type)
         {
             return type switch
@@ -315,6 +335,24 @@ namespace ApiStatsApp.Controllers
                         }
                     }
                     break;
+                case StatType.VaccinesDate:
+                    {
+                        IEnumerable<VaccinesD> data = GetData<VaccinesD>().Data;
+                        switch (field)
+                        {
+                            case "region":
+                                return new JsonResult(data.Select(d => d.REGION).OrderBy(d => d).Distinct());
+                            case "ageGroup":
+                                return new JsonResult(data.Select(d => d.AGEGROUP).OrderBy(d => d).Distinct());
+                            case "sex":
+                                return new JsonResult(data.Select(d => d.SEX).OrderBy(d => d).Distinct());
+                            case "dose":
+                                return new JsonResult(data.Select(d => d.DOSE).OrderBy(d => d).Distinct());
+                            default:
+                                break;
+                        }
+                    }
+                    break;
             }
 
             return null;
@@ -343,6 +381,9 @@ namespace ApiStatsApp.Controllers
                     break;
                 case nameof(ConfirmedDTests):
                     apiPart = "COVID19BE_TESTS";
+                    break;
+                case nameof(VaccinesD):
+                    apiPart = "COVID19BE_VACC";
                     break;
                 default:
                     break;

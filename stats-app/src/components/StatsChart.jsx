@@ -58,7 +58,12 @@ const StatsChart = (props) => {
             chartSeriesInfo = [
                 { label: "Tests", field: "testS_ALL", visible: true }
             ];
-            break;                           
+            break;
+        case "VaccinesDate":
+            chartSeriesInfo = [
+                { label: "Vaccines", field: "count", visible: true }
+            ];
+            break;                                   
         default:
             break;
     }

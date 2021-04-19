@@ -12,8 +12,9 @@ import CasesDateMunicipalityCum from './components/CasesDateMunicipalityCum'
 import Hospitalisations from './components/Hospitalisations'
 import Mortality from './components/Mortality'
 import Tests from './components/Tests'
+import Vaccines from './components/Vaccines'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers, faMapMarked, faMap, faUserNurse, faSkullCrossbones, faVial, faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { faUsers, faMapMarked, faMap, faUserNurse, faSkullCrossbones, faVial, faSyringe, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
   return (
@@ -55,6 +56,10 @@ function App() {
                   <FontAwesomeIcon className="mr-2" icon={ faVial } />
                   Tests
                 </PageLink>
+                <PageLink className="nav-link" to={`/vaccines`}>
+                  <FontAwesomeIcon className="mr-2" icon={ faSyringe } />
+                  Vaccination
+                </PageLink>
               </Nav>
               <Form inline hidden>
                 <FormControl type="text" placeholder="Search" className="mr-sm-2" />
@@ -74,6 +79,7 @@ function App() {
             <Route path={`/hosp`} component={Hospitalisations} />
             <Route path={`/mortality`} component={Mortality} />
             <Route path={`/tests`} component={Tests} />
+            <Route path={`/vaccines`} component={Vaccines} />
             <Route path={`/not-found`} component={NotFound} />
             <PageRedirect to={`/not-found`} />
           </Switch>

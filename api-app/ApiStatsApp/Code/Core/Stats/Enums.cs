@@ -7,6 +7,7 @@
         CasesDateCumM,
         CasesDateHosp,
         CasesDateMort,
-        CasesDateTests
+        CasesDateTests,
+        VaccinesDate
     }
 }
