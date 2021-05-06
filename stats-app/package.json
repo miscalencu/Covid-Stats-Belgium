@@ -13,7 +13,7 @@
     "@testing-library/user-event": "^7.2.1",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.6.0",
-    "highcharts": "^8.2.2",
+    "highcharts": "^9.0.0",
     "highcharts-react-official": "^3.0.0",
     "moment": "^2.29.1",
     "react": "^16.14.0",
